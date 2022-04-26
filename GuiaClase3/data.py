@@ -41,23 +41,55 @@ class Data(object):
         validation = X[idx_val, ]
         idx_test = idx[np.arange(n_val+n_train, n_test+n_val+n_train)]
         test = X[idx_test, ]
+        #self.train = train
+        #data = self.validation
+        #data = self.test
         return train, validation, test
 
-    
-    def removeNaNs(self):
-        X = self.dataset
+
+
+    def removeNaNs(self, X):
         ncols = len(X[0])
+        nrows = len(X)
+        nans = np.array([], dtype="int64")
+        nans_in_cols = []
         for i in range(ncols):
             icol = 'col' + str(i+1)
-            asd = np.where(np.isnan(X[icol]))
+            aux = np.where(np.isnan(X[icol]))
+            if aux[0].size != 0:
+                nans_in_cols.append(icol)
+            nans = np.append(nans, aux[0], axis=0)
+        
+        X = X[[name for name in X.dtype.names if name not in nans_in_cols]]
+        nans = np.unique(nans)
+        X = np.delete(X, nans)
+        
+        # Cambio de array estructurado a 2d array para poder pasar X a PCA de scikit-learn
+        ncols_new = len(X[0])
+        nrows_new = len(X)
+        XX = np.zeros((nrows_new, ncols_new))
+        for i in range(nrows_new):
+            for j in range(ncols_new):
+                XX[i, j] = np.asarray(X[i][j])
             
-        
-        
-        rows, cols = np.where(np.isnan(x))
-        x = np.delete(x, rows, axis=0)
-        x = np.delete(x, cols, axis=1)
-        return x
+        return XX
     
-    def replaceNaNs(self):
-        pass
+    
+    def replaceNaNs(self, X):
+        ncols = len(X[0])
+        nrows = len(X)
+        for i in range(ncols):
+            icol = 'col' + str(i+1)
+            aux = np.where(np.isnan(X[icol]))
+            if aux[0].size != 0:
+                col_mean = np.nanmean(X[icol])
+                X[icol][aux] = col_mean
+        
+        # Cambio de array estructurado a 2d array para poder pasar X a PCA de scikit-learn
+        XX = np.zeros((nrows, ncols))
+        for i in range(nrows):
+            for j in range(ncols):
+                XX[i, j] = np.asarray(X[i][j])
+        
+        return XX
 
