@@ -65,13 +65,12 @@ class Data(object):
         X = np.delete(X, nans)
         
         # Cambio de array estructurado a 2d array para poder pasar X a PCA de scikit-learn
-        ncols_new = len(X[0])
-        nrows_new = len(X)
-        XX = np.zeros((nrows_new, ncols_new))
-        for i in range(nrows_new):
-            for j in range(ncols_new):
-                XX[i, j] = np.asarray(X[i][j])
-            
+        for i, col_name in enumerate(X.dtype.names):
+            if i==0:
+                XX = X[col_name]
+            else:
+                XX = np.c_[XX, X[col_name]]
+        
         return XX
     
     
@@ -86,10 +85,11 @@ class Data(object):
                 X[icol][aux] = col_mean
         
         # Cambio de array estructurado a 2d array para poder pasar X a PCA de scikit-learn
-        XX = np.zeros((nrows, ncols))
-        for i in range(nrows):
-            for j in range(ncols):
-                XX[i, j] = np.asarray(X[i][j])
+        for i, col_name in enumerate(X.dtype.names):
+            if i==0:
+                XX = X[col_name]
+            else:
+                XX = np.c_[XX, X[col_name]]
         
         return XX
 
