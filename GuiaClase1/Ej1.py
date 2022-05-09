@@ -24,7 +24,7 @@ def norma_p(A, p):
     return norma
     
     
-#X = np.random.rand(10,5)
+X = np.random.rand(10,5)
 
-#norma = norma_p(X, 'inf')
-#print(norma.T)
+norma = norma_p(X, 'inf')
+print(norma.T)
